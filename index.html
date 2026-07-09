@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compounding Ledger — Grow Your Wealth</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0E2A22;
+    --ink-soft: #1B3A30;
+    --paper: #FBF8F1;
+    --paper-dim: #F1ECDF;
+    --emerald: #1F7A5C;
+    --emerald-soft: #E4EFE8;
+    --gold: #C9973C;
+    --gold-soft: #F6ECD8;
+    --slate: #2E5266;
+    --coral: #E2653A;
+    --line: #DDD5C2;
+    --text: #22291F ;
+    --text-dim: #6B6E5F;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--paper);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--gold-soft); }
+
+  .header {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 30px 6vw 26px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::after {
+    content: "";
+    position: absolute;
+    right: -60px;
+    top: -60px;
+    width: 220px;
+    height: 220px;
+    border: 1px solid rgba(251,248,241,0.08);
+    border-radius: 50%;
+  }
+  .header::before {
+    content: "";
+    position: absolute;
+    right: 10px;
+    top: -20px;
+    width: 160px;
+    height: 160px;
+    border: 1px solid rgba(251,248,241,0.06);
+    border-radius: 50%;
+  }
+  .header-eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+  .header h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: clamp(28px, 4vw, 42px);
+    margin: 0 0 6px;
+    letter-spacing: -0.01em;
+  }
+  .header p {
+    margin: 0;
+    color: rgba(251,248,241,0.62);
+    font-size: 14px;
+    max-width: 520px;
+    line-height: 1.5;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 0;
+    max-width: 1280px;
+    margin: 0 auto;
+    min-height: calc(100vh - 140px);
+  }
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+  }
+
+  /* ---- input panel: styled like a deposit slip ---- */
+  .panel {
+    background: var(--paper-dim);
+    border-right: 1px solid var(--line);
+    padding: 32px 28px 40px;
+  }
+  @media (max-width: 900px) {
+    .panel { border-right: none; border-bottom: 1px solid var(--line); }
+  }
+  .panel-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin: 0 0 22px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed var(--line);
+  }
+
+  .field {
+    margin-bottom: 22px;
+  }
+  .field-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+  }
+  .field label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-soft);
+  }
+  .field .field-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--emerald);
+    font-weight: 600;
+  }
+  .field input[type="number"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    border-radius: 4px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    color: var(--text);
+  }
+  .field input[type="number"]:focus {
+    outline: none;
+    border-color: var(--emerald);
+    box-shadow: 0 0 0 3px var(--emerald-soft);
+  }
+  .field input[type="range"] {
+    width: 100%;
+    -webkit-appearance: none;
+    height: 4px;
+    background: var(--line);
+    border-radius: 2px;
+    margin-top: 10px;
+  }
+  .field input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--emerald);
+    border: 2px solid var(--paper);
+    box-shadow: 0 0 0 1px var(--emerald);
+    cursor: pointer;
+  }
+  .field input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--emerald);
+    border: 2px solid var(--paper);
+    box-shadow: 0 0 0 1px var(--emerald);
+    cursor: pointer;
+  }
+
+  .segmented {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .segmented button {
+    flex: 1 1 auto;
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--text-dim);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 12.5px;
+    font-weight: 500;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+  .segmented button:hover { border-color: var(--emerald); color: var(--ink); }
+  .segmented button.active {
+    background: var(--emerald);
+    border-color: var(--emerald);
+    color: var(--paper);
+  }
+
+  .field-hint {
+    font-size: 11.5px;
+    color: var(--text-dim);
+    margin-top: 6px;
+    line-height: 1.4;
+  }
+
+  /* ---- statement panel ---- */
+  .statement {
+    padding: 36px 5vw 50px;
+  }
+
+  .hero {
+    margin-bottom: 30px;
+  }
+  .hero-eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+  }
+  .hero-number {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: clamp(38px, 6vw, 64px);
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    line-height: 1;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .hero-number .words {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--gold);
+    background: var(--gold-soft);
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 0;
+  }
+
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-top: 22px;
+  }
+  @media (max-width: 640px) {
+    .stat-row { grid-template-columns: 1fr; }
+  }
+  .stat-chip {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 14px 16px;
+    position: relative;
+  }
+  .stat-chip.invested { border-left: 3px solid var(--emerald); }
+  .stat-chip.interest { border-left: 3px solid var(--gold); }
+  .stat-chip.multiple { border-left: 3px solid var(--coral); }
+  .stat-chip .label {
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+  .stat-chip .value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .chart-section {
+    margin-top: 40px;
+  }
+  .section-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .legend {
+    display: flex;
+    gap: 16px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 12px;
+  }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; color: var(--text-dim); }
+  .legend .dot { width: 9px; height: 9px; border-radius: 2px; }
+  .dot.invested { background: var(--emerald); }
+  .dot.interest { background: var(--gold); }
+
+  .chart-wrap {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 16px 8px 6px;
+  }
+  canvas#chart { width: 100%; display: block; }
+
+  .table-section { margin-top: 40px; }
+  .table-wrap {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--paper);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+  }
+  thead th {
+    background: var(--ink);
+    color: var(--paper);
+    text-align: right;
+    padding: 10px 16px;
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    position: sticky;
+    top: 0;
+  }
+  thead th:first-child { text-align: left; }
+  tbody td {
+    text-align: right;
+    padding: 9px 16px;
+    border-bottom: 1px solid var(--line);
+    color: var(--text);
+  }
+  tbody td:first-child {
+    text-align: left;
+    color: var(--text-dim);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 500;
+  }
+  tbody tr:nth-child(even) { background: var(--paper-dim); }
+  tbody tr:hover { background: var(--emerald-soft); }
+  .table-scroll { max-height: 360px; overflow-y: auto; }
+  td.interest-col { color: var(--gold); font-weight: 600; }
+  td.total-col { color: var(--ink); font-weight: 600; }
+
+  .footnote {
+    margin-top: 20px;
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    max-width: 640px;
+  }
+
+  .attribution {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--line);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--text-dim);
+    max-width: 640px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-eyebrow">Passbook · Compounding Statement</div>
+  <h1>Compounding Ledger</h1>
+  <p>Set your opening deposit, your recurring contribution, and your interest terms — watch what patience compounds into.</p>
+</div>
+
+<div class="layout">
+  <!-- INPUT PANEL -->
+  <div class="panel">
+    <p class="panel-title">Deposit slip</p>
+
+    <div class="field">
+      <div class="field-label-row">
+        <label for="initial">Initial deposit (₹)</label>
+      </div>
+      <input type="number" id="initial" value="500000" min="0" step="1000">
+      <div class="field-hint" id="initialWords">₹10.00 L</div>
+    </div>
+
+    <div class="field">
+      <div class="field-label-row">
+        <label for="contribution">Recurring contribution (₹)</label>
+      </div>
+      <input type="number" id="contribution" value="5000" min="0" step="500">
+      <div class="field-hint" id="contribWords">₹10,000</div>
+    </div>
+
+    <div class="field">
+      <label>Contribution frequency</label>
+      <div class="segmented" id="contribFreq">
+        <button data-months="1" class="active">Monthly</button>
+        <button data-months="3">Quarterly</button>
+        <button data-months="6">Half-yearly</button>
+        <button data-months="12">Yearly</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-label-row">
+        <label for="rate">Annual interest rate</label>
+        <span class="field-value" id="rateValue">12.0%</span>
+      </div>
+      <input type="range" id="rate" min="1" max="30" step="0.5" value="12">
+    </div>
+
+    <div class="field">
+      <label>Compounding frequency</label>
+      <div class="segmented" id="compoundFreq">
+        <button data-months="1">Monthly</button>
+        <button data-months="3">Quarterly</button>
+        <button data-months="6">Half-yearly</button>
+        <button data-months="12" class="active">Yearly</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-label-row">
+        <label for="years">Time horizon</label>
+        <span class="field-value" id="yearsValue">20 years</span>
+      </div>
+      <input type="range" id="years" min="1" max="40" step="1" value="20">
+    </div>
+
+    <div class="field-hint">
+      Interest is credited to your balance at each compounding date. Contributions join the balance as you make them and start earning from the next compounding date.
+    </div>
+  </div>
+
+  <!-- STATEMENT PANEL -->
+  <div class="statement">
+    <div class="hero">
+      <div class="hero-eyebrow">Projected corpus after <span id="heroYears">20</span> years</div>
+      <div class="hero-number">
+        <span id="heroValue">₹1,15,23,456</span>
+        <span class="words" id="heroWords">1.15 Cr</span>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-chip invested">
+          <div class="label">Total invested</div>
+          <div class="value" id="statInvested">₹34,00,000</div>
+        </div>
+        <div class="stat-chip interest">
+          <div class="label">Interest earned</div>
+          <div class="value" id="statInterest">₹81,23,456</div>
+        </div>
+        <div class="stat-chip multiple">
+          <div class="label">Wealth multiple</div>
+          <div class="value" id="statMultiple">3.39×</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-section">
+      <div class="section-title">
+        <span>Growth over time</span>
+        <span class="legend">
+          <span><span class="dot invested"></span>Invested</span>
+          <span><span class="dot interest"></span>Interest</span>
+        </span>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="chart" height="280"></canvas>
+      </div>
+    </div>
+
+    <div class="table-section">
+      <div class="section-title"><span>Year-wise statement</span></div>
+      <div class="table-wrap">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Year</th>
+                <th>Invested</th>
+                <th>Interest</th>
+                <th>Total value</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <p class="footnote">
+      This is an estimate for planning purposes, assuming a constant interest rate throughout the period. Actual returns from market-linked instruments will vary year to year. Amounts are shown in Indian numbering (lakh = 10⁵, crore = 10⁷).
+    </p>
+
+    <p class="attribution">This application was built using Claude Code by Pankaj.</p>
+  </div>
+</div>
+
+<script>
+(function() {
+  // ---------- state ----------
+  let state = {
+    initial: 500000,
+    contribution: 5000,
+    contribMonths: 1,
+    rate: 12,
+    compoundMonths: 12,
+    years: 20
+  };
+
+  // ---------- formatting ----------
+  function formatINR(num) {
+    num = Math.round(num);
+    const neg = num < 0;
+    num = Math.abs(num);
+    let str = num.toString();
+    let lastThree = str.substring(str.length - 3);
+    let other = str.substring(0, str.length - 3);
+    if (other !== '') lastThree = ',' + lastThree;
+    let formatted = other.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + lastThree;
+    return (neg ? '-' : '') + '₹' + formatted;
+  }
+
+  function toIndianWords(num) {
+    const abs = Math.abs(num);
+    if (abs >= 1e7) return (num / 1e7).toFixed(2) + ' Cr';
+    if (abs >= 1e5) return (num / 1e5).toFixed(2) + ' L';
+    if (abs >= 1e3) return (num / 1e3).toFixed(1) + ' K';
+    return num.toFixed(0);
+  }
+
+  // ---------- simulation ----------
+  function simulate(s) {
+    const months = s.years * 12;
+    let balance = s.initial;
+    let invested = s.initial;
+    const periodicRate = Math.pow(1 + s.rate / 100, s.compoundMonths / 12) - 1;
+
+    const yearly = [{ year: 0, invested: invested, interest: 0, total: balance }];
+
+    for (let m = 1; m <= months; m++) {
+      if (m % s.contribMonths === 0) {
+        balance += s.contribution;
+        invested += s.contribution;
+      }
+      if (m % s.compoundMonths === 0) {
+        balance += balance * periodicRate;
+      }
+      if (m % 12 === 0) {
+        yearly.push({
+          year: m / 12,
+          invested: invested,
+          interest: balance - invested,
+          total: balance
+        });
+      }
+    }
+    return yearly;
+  }
+
+  // ---------- chart ----------
+  const canvas = document.getElementById('chart');
+  const ctx = canvas.getContext('2d');
+
+  function drawChart(data) {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const cssWidth = canvas.parentElement.clientWidth - 16;
+    const cssHeight = 280;
+    canvas.width = cssWidth * dpr;
+    canvas.height = cssHeight * dpr;
+    canvas.style.width = cssWidth + 'px';
+    canvas.style.height = cssHeight + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, cssWidth, cssHeight);
+
+    const padL = 68, padR = 16, padT = 16, padB = 30;
+    const w = cssWidth - padL - padR;
+    const h = cssHeight - padT - padB;
+
+    const maxTotal = Math.max(...data.map(d => d.total));
+    const niceMax = maxTotal * 1.08;
+
+    const xFor = (i) => padL + (i / (data.length - 1)) * w;
+    const yFor = (val) => padT + h - (val / niceMax) * h;
+
+    // gridlines + y labels
+    ctx.strokeStyle = '#DDD5C2';
+    ctx.lineWidth = 1;
+    ctx.font = '11px "IBM Plex Mono", monospace';
+    ctx.fillStyle = '#6B6E5F';
+    const gridSteps = 4;
+    for (let g = 0; g <= gridSteps; g++) {
+      const val = (niceMax / gridSteps) * g;
+      const y = yFor(val);
+      ctx.beginPath();
+      ctx.moveTo(padL, y);
+      ctx.lineTo(padL + w, y);
+      ctx.stroke();
+      ctx.textAlign = 'right';
+      ctx.fillText(toIndianWords(val), padL - 10, y + 4);
+    }
+
+    // invested area (bottom layer)
+    ctx.beginPath();
+    ctx.moveTo(xFor(0), yFor(0));
+    data.forEach((d, i) => ctx.lineTo(xFor(i), yFor(d.invested)));
+    ctx.lineTo(xFor(data.length - 1), yFor(0));
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(31, 122, 92, 0.85)';
+    ctx.fill();
+
+    // total area (invested + interest), drawn on top, clipped visually by drawing only the band above invested
+    ctx.beginPath();
+    ctx.moveTo(xFor(0), yFor(data[0].invested));
+    data.forEach((d, i) => ctx.lineTo(xFor(i), yFor(d.total)));
+    for (let i = data.length - 1; i >= 0; i--) {
+      ctx.lineTo(xFor(i), yFor(data[i].invested));
+    }
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(201, 151, 60, 0.85)';
+    ctx.fill();
+
+    // total line on top
+    ctx.beginPath();
+    data.forEach((d, i) => {
+      const x = xFor(i), y = yFor(d.total);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.strokeStyle = '#0E2A22';
+    ctx.lineWidth = 1.8;
+    ctx.stroke();
+
+    // x labels (years) — sparse
+    const n = data.length - 1;
+    const step = n <= 10 ? 1 : Math.ceil(n / 8);
+    ctx.fillStyle = '#6B6E5F';
+    ctx.textAlign = 'center';
+    ctx.font = '11px "IBM Plex Mono", monospace';
+    for (let i = 0; i <= n; i += step) {
+      ctx.fillText('Y' + data[i].year, xFor(i), cssHeight - 8);
+    }
+    if (n % step !== 0) {
+      ctx.fillText('Y' + data[n].year, xFor(n), cssHeight - 8);
+    }
+  }
+
+  // ---------- table ----------
+  function renderTable(data) {
+    const body = document.getElementById('tableBody');
+    body.innerHTML = '';
+    data.filter(d => d.year > 0).forEach(d => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>Year ${d.year}</td>
+        <td>${formatINR(d.invested)}</td>
+        <td class="interest-col">${formatINR(d.interest)}</td>
+        <td class="total-col">${formatINR(d.total)}</td>
+      `;
+      body.appendChild(tr);
+    });
+  }
+
+  // ---------- render ----------
+  function render() {
+    const data = simulate(state);
+    const final = data[data.length - 1];
+
+    document.getElementById('heroYears').textContent = state.years;
+    document.getElementById('heroValue').textContent = formatINR(final.total);
+    document.getElementById('heroWords').textContent = toIndianWords(final.total);
+    document.getElementById('statInvested').textContent = formatINR(final.invested);
+    document.getElementById('statInterest').textContent = formatINR(final.interest);
+    document.getElementById('statMultiple').textContent = (final.total / final.invested).toFixed(2) + '×';
+
+    document.getElementById('initialWords').textContent = toIndianWords(state.initial);
+    document.getElementById('contribWords').textContent = formatINR(state.contribution);
+
+    drawChart(data);
+    renderTable(data);
+  }
+
+  // ---------- wire up inputs ----------
+  const initialInput = document.getElementById('initial');
+  const contributionInput = document.getElementById('contribution');
+  const rateInput = document.getElementById('rate');
+  const yearsInput = document.getElementById('years');
+  const rateValue = document.getElementById('rateValue');
+  const yearsValue = document.getElementById('yearsValue');
+
+  initialInput.addEventListener('input', () => {
+    state.initial = Math.max(0, Number(initialInput.value) || 0);
+    render();
+  });
+  contributionInput.addEventListener('input', () => {
+    state.contribution = Math.max(0, Number(contributionInput.value) || 0);
+    render();
+  });
+  rateInput.addEventListener('input', () => {
+    state.rate = Number(rateInput.value);
+    rateValue.textContent = state.rate.toFixed(1) + '%';
+    render();
+  });
+  yearsInput.addEventListener('input', () => {
+    state.years = Number(yearsInput.value);
+    yearsValue.textContent = state.years + ' years';
+    render();
+  });
+
+  function wireSegmented(id, stateKey) {
+    const container = document.getElementById(id);
+    container.querySelectorAll('button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        container.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state[stateKey] = Number(btn.dataset.months);
+        render();
+      });
+    });
+  }
+  wireSegmented('contribFreq', 'contribMonths');
+  wireSegmented('compoundFreq', 'compoundMonths');
+
+  window.addEventListener('resize', () => {
+    const data = simulate(state);
+    drawChart(data);
+  });
+
+  render();
+})();
+</script>
+
+</body>
+</html>
